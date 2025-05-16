@@ -1112,7 +1112,7 @@ class MMVet(ImageBaseDataset):
 class SanguoDataset(ImageBaseDataset):
     TYPE = 'VQA'
     DATASET_URL = {
-        'SanguoDataset': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoVLM-testset-VQA.tsv'
+        'SanguoDataset': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset.tsv'
     }
     DATASET_MD5 = {
         'SanguoDataset': '57e8d0e6e776cbf0a5345f1d6df171e0'
@@ -1130,7 +1130,7 @@ class SanguoDataset(ImageBaseDataset):
 
         if not osp.exists(storage):
             data = load(eval_file)
-            model = build_judge(max_tokens=3, **judge_kwargs)
+            model = build_judge(max_tokens=64, **judge_kwargs)
             assert model.working(), ('Sanguo evaluation requires a working OPENAI API\n' + DEBUG_MESSAGE)
 
             lt = len(data)

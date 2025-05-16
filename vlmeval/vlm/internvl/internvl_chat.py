@@ -260,6 +260,8 @@ class InternVLChat(BaseModel):
                 prompt = question
                 if os.getenv('USE_COT') == '1':
                     prompt = build_qa_cot_prompt(line, prompt, self.cot_prompt)
+            elif listinstr(['SanguoDataset'], dataset):
+                prompt = question + '\n请回答一下问题.'
             else:
                 prompt = question + '\nAnswer the question using a single word or phrase.'
         else:
