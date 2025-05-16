@@ -381,7 +381,7 @@ def main():
                             judge_kwargs['model'] = 'exact_matching'
                         else:
                             judge_kwargs['model'] = 'chatgpt-0125'
-                    elif listinstr(['MMVet', 'LLaVABench', 'MMBench_Video'], dataset_name):
+                    elif listinstr(['MMVet', 'LLaVABench', 'MMBench_Video', "SanguoDataset"], dataset_name):
                         judge_kwargs['model'] = 'gpt-4-turbo'
                     elif listinstr(['VGRPBench'], dataset_name):
                         judge_kwargs['model'] = 'gpt-4o'

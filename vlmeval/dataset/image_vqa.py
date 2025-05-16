@@ -1108,7 +1108,61 @@ class MMVet(ImageBaseDataset):
         dump(score, score_pth)
         dump(score_fine, score_fine_pth)
         return score
+    
+class SanguoDataset(ImageBaseDataset):
+    TYPE = 'VQA'
+    DATASET_URL = {
+        'SanguoDataset': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoVLM-testset-VQA.tsv'
+    }
+    DATASET_MD5 = {
+        'SanguoDataset': '57e8d0e6e776cbf0a5345f1d6df171e0'
+    }
 
+    @classmethod
+    def evaluate(self, eval_file, **judge_kwargs):
+        from .utils.sanguo import Sanguo_auxeval, Sanguo_acc
+
+        suffix = eval_file.split('.')[-1]
+        model = judge_kwargs['model']
+        storage = eval_file.replace(f'.{suffix}', f'_{model}.xlsx')
+        tmp_file = eval_file.replace(f'.{suffix}', f'_{model}.pkl')
+        nproc = judge_kwargs.pop('nproc', 4)
+
+        if not osp.exists(storage):
+            data = load(eval_file)
+            model = build_judge(max_tokens=3, **judge_kwargs)
+            assert model.working(), ('Sanguo evaluation requires a working OPENAI API\n' + DEBUG_MESSAGE)
+
+            lt = len(data)
+            lines = [data.iloc[i] for i in range(lt)]
+            tups = [(model, line) for line in lines]
+            indices = [line['index'] for line in lines]
+
+            ans = load(tmp_file) if osp.exists(tmp_file) else {}
+            tups = [x for x, i in zip(tups, indices) if i not in ans]
+            indices = [i for i in indices if i not in ans]
+
+            if len(indices):
+                new_results = track_progress_rich(
+                    Sanguo_auxeval,
+                    tups,
+                    nproc=nproc,
+                    chunksize=nproc,
+                    keys=indices,
+                    save=tmp_file,
+                )
+                ans = load(tmp_file)
+                for k, v in zip(indices, new_results):
+                    assert k in ans
+                    assert ans[k]['log'] == v['log'] and ans[k]['score'] == v['score']
+            data['score'] = [ans[idx]['score'] for idx in data['index']]
+            data['log'] = [ans[idx]['log'] for idx in data['index']]
+            dump(data, storage)
+
+        score, score_fine = Sanguo_acc(storage)
+        dump(score, storage.replace('.xlsx', '_score.csv'))
+        dump(score_fine, storage.replace('.xlsx', '_score_fine.csv'))
+        return score
 
 class MTVQADataset(ImageBaseDataset):
     TYPE = 'VQA'
