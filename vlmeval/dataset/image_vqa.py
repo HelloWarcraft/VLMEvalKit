@@ -1116,8 +1116,8 @@ class SanguoDataset(ImageBaseDataset):
         'SanguoDataset_MINI': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_MINI.tsv'
     }
     DATASET_MD5 = {
-        'SanguoDataset': '57e8d0e6e776cbf0a5345f1d6df171e0',
-        'SanguoDataset_MINI': '0be4f6cba70ebdd8e998afc819e7c18b'
+        'SanguoDataset': '6907f72e0c3c449f667437e48170cdaf',
+        'SanguoDataset_MINI': 'cce3cc17f1bb69b0beaef233aabd701a'
     }
 
     @classmethod
