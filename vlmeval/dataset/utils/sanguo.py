@@ -1,28 +1,8 @@
 from ...smp import *
+import re
+from collections import defaultdict
+import pandas as pd
 
-
-# def build_sanguo_prompt(line):
-#     question = line['question']
-#     gt = str(line['answer'])
-#     prediction = str(line['prediction'])
-
-#     prompt = """
-# Compare the ground truth and prediction from AI models, to give a correctness score for the prediction.
-# <AND> in the ground truth means it is totally right
-# only when all elements in the ground truth are present in the prediction,
-# and <OR> means it is totally right when any one element in the ground truth is present in the prediction.
-# The correctness score is 0.0 (totally wrong), 0.1, ..., or 1.0 (totally right).
-# Just complete the last space of the correctness score.
-
-# Question | Ground truth | Prediction | Correctness
-# --- | --- | --- | ---
-# Who is this person? | Guan Yu <OR> Lord Guan | It's Liu Bei | 0.0
-# Who is this person? | Guan Yu <OR> Lord Guan | Lord Guan | 1.0
-# Why did the fire start? | Zhou Yu set the fire <AND> to burn Cao Cao's fleet | A fire started during naval battle | 0.2
-# ...
-# """
-#     return prompt + '\n' + ' | '.join(
-#         [question, gt.replace('<AND>', ' <AND> ').replace('<OR>', ' <OR> '), prediction, ''])
 
 def build_sanguo_prompt(line):
     question = line['question']
@@ -44,20 +24,37 @@ Score:
     return prompt
 
 
+def parse_score(val):
+    """从字符串中提取一个合法的 float 分数，并限定在 [0.0, 1.0] 之间"""
+    if isinstance(val, float):
+        score = val
+    elif isinstance(val, int):
+        score = float(val)
+    elif isinstance(val, str):
+        try:
+            score = float(val)
+        except ValueError:
+            match = re.search(r'(\d(?:\.\d+)?)', val)
+            if match:
+                score = float(match.group())
+            else:
+                return 0.0
+    else:
+        return 0.0
+
+    # 限定在合法范围内
+    if 0.0 <= score <= 1.0:
+        return score
+    return 0.0
+
 
 def Sanguo_auxeval(model, line):
-    def float_cvt(s):
-        try:
-            return float(s)
-        except ValueError:
-            return None
-
     prompt = build_sanguo_prompt(line)
     log = ''
     for i in range(5):
         output = model.generate(prompt, temperature=i * 0.5)
-        score = float_cvt(output)
-        if score is None or not (0.0 <= score <= 1.0):
+        score = parse_score(output)
+        if score == 0.0 and '0.0' not in str(output):
             log += f'Try {i}: output is {output}, failed or invalid.\n'
         else:
             log += 'Succeed'
@@ -68,24 +65,33 @@ def Sanguo_auxeval(model, line):
 
 def Sanguo_acc(result_file):
     data = load(result_file)
-    tot = defaultdict(lambda: 0)
-    score = defaultdict(lambda: 0)
+    tot = defaultdict(int)
+    score = defaultdict(float)
     cate2_list = []
 
-    for _, item in data.iterrows():
+    for idx, item in data.iterrows():
         cate = item['category']
         cate2 = cate.replace(',', '_')
         if cate2 not in cate2_list:
             cate2_list.append(cate2)
-        grade = float(item['score'])
-        tot['Overall'] += 1
-        score['Overall'] += grade
+
+        raw_score = item['score']
+        grade = parse_score(raw_score)
+
+        # print(f"[DEBUG] row {idx} | category: {cate2} | raw_score: {raw_score} | parsed: {grade}")
+
+        tot['总计得分'] += 1
+        score['总计得分'] += grade
         tot[cate2] += 1
         score[cate2] += grade
 
     res = defaultdict(list)
-    for k in cate2_list + ['Overall']:
+    for k in cate2_list + ['总计得分']:
         res['Category'].append(k)
-        res['tot'].append(tot[k])
-        res['acc'].append(score[k] / tot[k] * 100)
-    return pd.DataFrame(res), pd.DataFrame(res)
+        res['total'].append(tot[k])
+        res['sum_score'].append(round(score[k], 3))
+        percentage = (score[k] / tot[k] * 100) if tot[k] > 0 else 0.0
+        res['percentage_score'].append(f"{percentage:.2f}%")
+
+    df = pd.DataFrame(res)
+    return df, df

@@ -1117,7 +1117,7 @@ class SanguoDataset(ImageBaseDataset):
     }
     DATASET_MD5 = {
         'SanguoDataset': '6907f72e0c3c449f667437e48170cdaf',
-        'SanguoDataset_MINI': 'cce3cc17f1bb69b0beaef233aabd701a'
+        'SanguoDataset_MINI': '807d98b0bee08faa84ef58c9c2bcf478'
     }
 
     @classmethod
