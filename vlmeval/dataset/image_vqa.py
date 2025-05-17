@@ -1112,10 +1112,12 @@ class MMVet(ImageBaseDataset):
 class SanguoDataset(ImageBaseDataset):
     TYPE = 'VQA'
     DATASET_URL = {
-        'SanguoDataset': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset.tsv'
+        'SanguoDataset': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset.tsv',
+        'SanguoDataset_MINI': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_MINI.tsv'
     }
     DATASET_MD5 = {
-        'SanguoDataset': '57e8d0e6e776cbf0a5345f1d6df171e0'
+        'SanguoDataset': '57e8d0e6e776cbf0a5345f1d6df171e0',
+        'SanguoDataset_MINI': '0be4f6cba70ebdd8e998afc819e7c18b'
     }
 
     @classmethod
