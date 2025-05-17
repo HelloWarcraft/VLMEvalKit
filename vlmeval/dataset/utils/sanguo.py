@@ -1,28 +1,48 @@
 from ...smp import *
 
 
+# def build_sanguo_prompt(line):
+#     question = line['question']
+#     gt = str(line['answer'])
+#     prediction = str(line['prediction'])
+
+#     prompt = """
+# Compare the ground truth and prediction from AI models, to give a correctness score for the prediction.
+# <AND> in the ground truth means it is totally right
+# only when all elements in the ground truth are present in the prediction,
+# and <OR> means it is totally right when any one element in the ground truth is present in the prediction.
+# The correctness score is 0.0 (totally wrong), 0.1, ..., or 1.0 (totally right).
+# Just complete the last space of the correctness score.
+
+# Question | Ground truth | Prediction | Correctness
+# --- | --- | --- | ---
+# Who is this person? | Guan Yu <OR> Lord Guan | It's Liu Bei | 0.0
+# Who is this person? | Guan Yu <OR> Lord Guan | Lord Guan | 1.0
+# Why did the fire start? | Zhou Yu set the fire <AND> to burn Cao Cao's fleet | A fire started during naval battle | 0.2
+# ...
+# """
+#     return prompt + '\n' + ' | '.join(
+#         [question, gt.replace('<AND>', ' <AND> ').replace('<OR>', ' <OR> '), prediction, ''])
+
 def build_sanguo_prompt(line):
     question = line['question']
-    gt = str(line['answer'])
+    gt = str(line['answer'])    # gt - ground truth
     prediction = str(line['prediction'])
 
-    prompt = """
-Compare the ground truth and prediction from AI models, to give a correctness score for the prediction.
-<AND> in the ground truth means it is totally right
-only when all elements in the ground truth are present in the prediction,
-and <OR> means it is totally right when any one element in the ground truth is present in the prediction.
-The correctness score is 0.0 (totally wrong), 0.1, ..., or 1.0 (totally right).
-Just complete the last space of the correctness score.
+    prompt = f"""
+Question: {question}
+Ground truth: {gt}
+Prediction: {prediction}
 
-Question | Ground truth | Prediction | Correctness
---- | --- | --- | ---
-Who is this person? | Guan Yu <OR> Lord Guan | It's Liu Bei | 0.0
-Who is this person? | Guan Yu <OR> Lord Guan | Lord Guan | 1.0
-Why did the fire start? | Zhou Yu set the fire <AND> to burn Cao Cao's fleet | A fire started during naval battle | 0.2
-...
+<和> means all parts of the answer must appear in the prediction.
+<或> means any one part is enough.
+
+Give a score between 0.0 (completely wrong) and 1.0 (completely correct), in steps of 0.1.
+Only return the number as the final score.
+Score:
 """
-    return prompt + '\n' + ' | '.join(
-        [question, gt.replace('<AND>', ' <AND> ').replace('<OR>', ' <OR> '), prediction, ''])
+    return prompt
+
 
 
 def Sanguo_auxeval(model, line):
