@@ -792,13 +792,13 @@ internvl3 = {
         InternVLChat, model_path="OpenGVLab/InternVL3-1B", version="V2.0"
     ),
     "InternVL3-2B": partial(
-        InternVLChat, model_path="OpenGVLab/InternVL3-2B", version="V2.0"
+        InternVLChat, model_path="/share/new_models/InternVL3/InternVL3-2B", version="V2.0"
     ),
     "InternVL3-8B": partial(
         InternVLChat, model_path="OpenGVLab/InternVL3-8B", version="V2.0", use_lmdeploy=True
     ),
     "InternVL3-9B": partial(
-        InternVLChat, model_path="OpenGVLab/InternVL3-9B", version="V2.0"
+        InternVLChat, model_path="/share/new_models/InternVL3/InternVL3-9B", version="V2.0"
     ),
     "InternVL3-14B": partial(
         InternVLChat, model_path="OpenGVLab/InternVL3-14B", version="V2.0"
