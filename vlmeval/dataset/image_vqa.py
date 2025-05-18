@@ -1113,11 +1113,17 @@ class SanguoDataset(ImageBaseDataset):
     TYPE = 'VQA'
     DATASET_URL = {
         'SanguoDataset': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset.tsv',
-        'SanguoDataset_MINI': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_MINI.tsv'
+        'SanguoDataset_MINI': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_MINI.tsv',
+        'SanguoDataset_A': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_A.tsv',
+        'SanguoDataset_B': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_B.tsv',
+        'SanguoDataset_AB_MINI': 'https://github.com/HelloWarcraft/SanguoVLM/raw/refs/heads/main/SanguoDataset_AB_MINI.tsv'
     }
     DATASET_MD5 = {
         'SanguoDataset': '6907f72e0c3c449f667437e48170cdaf',
-        'SanguoDataset_MINI': 'cce3cc17f1bb69b0beaef233aabd701a'
+        'SanguoDataset_MINI': 'cce3cc17f1bb69b0beaef233aabd701a',
+        'SanguoDataset_A': '2f34d66544cdb2969b313c2216a22c57',
+        'SanguoDataset_B': '376968c58b3fa87571e4834761941371',
+        'SanguoDataset_AB_MINI': 'f91c16f11ff1fde09d864a085843df83'
     }
 
     @classmethod
